@@ -101,20 +101,20 @@ function GeneralInfoCard({ user, onSave }) {
           </div>
         </form>
       ) : (
-        <div>
-          <div className="info-row">
+        <div className="info-grid">
+          <div className="info-cell">
             <span className="info-label">Name</span>
             <span className="info-value">{user.name}</span>
           </div>
-          <div className="info-row">
+          <div className="info-cell">
             <span className="info-label">Age</span>
             <span className={user.age ? 'info-value' : 'info-value muted'}>{user.age || 'Not added'}</span>
           </div>
-          <div className="info-row">
+          <div className="info-cell">
             <span className="info-label">Degree</span>
             <span className={user.degree ? 'info-value' : 'info-value muted'}>{user.degree || 'Not added'}</span>
           </div>
-          <div className="info-row">
+          <div className="info-cell">
             <span className="info-label">College</span>
             <span className={user.college ? 'info-value' : 'info-value muted'}>{user.college || 'Not added'}</span>
           </div>
@@ -143,7 +143,7 @@ export default function ProfilePage() {
   const initials = user.name ? user.name.charAt(0).toUpperCase() : '?'
 
   return (
-    <div className="page-frame profile-page">
+    <div className="page-frame details-page profile-page">
       <button type="button" className="back-link" onClick={() => navigate(-1)}>
         <ArrowLeft size={16} /> Back
       </button>
