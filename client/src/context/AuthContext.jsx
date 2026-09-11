@@ -6,7 +6,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null)
   const [booting, setBooting] = useState(true)
 
-  // Load saved session on initial render
+  // Restore session from localStorage on application mount
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem('skillup_user')
@@ -22,6 +22,7 @@ export function AuthProvider({ children }) {
   }, [])
 
   const login = async ({ email, role: selectedRole }) => {
+    // Determine priority role: explicit dropdown value takes precedence
     let role = selectedRole || 'student'
     if (!selectedRole) {
       if (email.includes('mentor')) role = 'mentor'
@@ -34,7 +35,7 @@ export function AuthProvider({ children }) {
       role,
       skills: ['Python', 'SQL', 'React'],
     }
-    
+
     setUser(loggedUser)
     localStorage.setItem('skillup_user', JSON.stringify(loggedUser))
     return loggedUser
@@ -45,9 +46,10 @@ export function AuthProvider({ children }) {
       name: form.name,
       email: form.email,
       role: form.role,
+      college: form.college || '',
       skills: form.skills ? form.skills.split(',').map((s) => s.trim()) : [],
     }
-    
+
     setUser(newUser)
     localStorage.setItem('skillup_user', JSON.stringify(newUser))
     return newUser
@@ -64,6 +66,8 @@ export function AuthProvider({ children }) {
   const logout = () => {
     setUser(null)
     localStorage.removeItem('skillup_user')
+    // Clear any token or leftover auth keys
+    localStorage.removeItem('token')
   }
 
   return (

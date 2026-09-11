@@ -1,6 +1,24 @@
 import { useState } from 'react'
-import { Briefcase, Building2, Clock3, MapPin, Plus, Search, Trash2, Users, X } from 'lucide-react'
+import {
+  Briefcase,
+  Building2,
+  ChevronDown,
+  ChevronUp,
+  Clock3,
+  ExternalLink,
+  GraduationCap,
+  Mail,
+  MapPin,
+  Plus,
+  Search,
+  Trash2,
+  Users,
+  X,
+} from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
+
+// Helper to generate a random score between 40 and 100
+const getRandomScore = () => Math.floor(Math.random() * (100 - 40 + 1)) + 40
 
 const initialJobs = [
   {
@@ -11,9 +29,38 @@ const initialJobs = [
     location: 'Remote',
     duration: '6 months',
     experienceLevel: 'Entry',
-    applicantsCount: 14,
+    applicantsCount: 3,
     skills: ['React', 'JavaScript', 'CSS', 'Tailwind'],
     status: 'Active',
+    applicants: [
+      {
+        id: 'app-1',
+        name: 'Aarav Sharma',
+        email: 'aarav.sharma@example.com',
+        college: 'NMIT Bengaluru',
+        degree: 'B.Tech - Computer Science',
+        score: getRandomScore(),
+        skills: ['React', 'JavaScript', 'Tailwind CSS'],
+      },
+      {
+        id: 'app-2',
+        name: 'Diya Patel',
+        email: 'diya.patel@example.com',
+        college: 'PES University',
+        degree: 'B.Tech - Information Science',
+        score: getRandomScore(),
+        skills: ['React', 'TypeScript', 'CSS'],
+      },
+      {
+        id: 'app-3',
+        name: 'Rohan Das',
+        email: 'rohan.das@example.com',
+        college: 'RV College of Engineering',
+        degree: 'B.E - Computer Science',
+        score: getRandomScore(),
+        skills: ['React', 'Next.js', 'Redux'],
+      },
+    ],
   },
   {
     _id: 'rec-2',
@@ -23,9 +70,29 @@ const initialJobs = [
     location: 'Bengaluru, KA',
     duration: 'Full-time',
     experienceLevel: 'Junior',
-    applicantsCount: 28,
+    applicantsCount: 2,
     skills: ['Node.js', 'Python', 'SQL', 'MongoDB'],
     status: 'Active',
+    applicants: [
+      {
+        id: 'app-4',
+        name: 'Pooja Nair',
+        email: 'pooja.nair@example.com',
+        college: 'BMS College of Engineering',
+        degree: 'B.Tech - Computer Science',
+        score: getRandomScore(),
+        skills: ['Node.js', 'Express', 'MongoDB'],
+      },
+      {
+        id: 'app-5',
+        name: 'Kunal Verma',
+        email: 'kunal.v@example.com',
+        college: 'MS Ramaiah Institute of Technology',
+        degree: 'B.E - Information Science',
+        score: getRandomScore(),
+        skills: ['Python', 'SQL', 'PostgreSQL'],
+      },
+    ],
   },
 ]
 
@@ -34,10 +101,14 @@ export default function RecruiterDashboard() {
   const [jobs, setJobs] = useState(initialJobs)
   const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
-  
+
+  // Applicants modal state
+  const [selectedJobForApplicants, setSelectedJobForApplicants] = useState(null)
+  const [expandedApplicantId, setExpandedApplicantId] = useState(null)
+
   const [newJob, setNewJob] = useState({
     title: '',
-    company: user?.name ? `${user.name}'s Company` : 'TechCorp',
+    company: user?.name ? `${user.name}'s Company` : 'TechCorp Solutions',
     type: 'internship',
     location: 'Remote',
     duration: '3 months',
@@ -46,9 +117,10 @@ export default function RecruiterDashboard() {
     description: '',
   })
 
-  const filteredJobs = jobs.filter((job) =>
-    job.title.toLowerCase().includes(search.toLowerCase()) ||
-    job.skills.some((skill) => skill.toLowerCase().includes(search.toLowerCase()))
+  const filteredJobs = jobs.filter(
+    (job) =>
+      job.title.toLowerCase().includes(search.toLowerCase()) ||
+      job.skills.some((skill) => skill.toLowerCase().includes(search.toLowerCase()))
   )
 
   const handlePostJob = (e) => {
@@ -64,13 +136,14 @@ export default function RecruiterDashboard() {
       applicantsCount: 0,
       skills: newJob.skills.split(',').map((s) => s.trim()).filter(Boolean),
       status: 'Active',
+      applicants: [],
     }
 
     setJobs([createdJob, ...jobs])
     setShowModal(false)
     setNewJob({
       title: '',
-      company: user?.name ? `${user.name}'s Company` : 'TechCorp',
+      company: user?.name ? `${user.name}'s Company` : 'TechCorp Solutions',
       type: 'internship',
       location: 'Remote',
       duration: '3 months',
@@ -82,9 +155,37 @@ export default function RecruiterDashboard() {
 
   const handleDeleteJob = (id) => {
     setJobs(jobs.filter((j) => j._id !== id))
+    if (selectedJobForApplicants?._id === id) {
+      setSelectedJobForApplicants(null)
+    }
   }
 
-  const totalApplicants = jobs.reduce((acc, job) => acc + job.applicantsCount, 0)
+  const handleOpenApplicants = (job) => {
+    // If the job has no mock applicant objects yet, generate them dynamically
+    if (!job.applicants || job.applicants.length === 0) {
+      const generated = Array.from({ length: job.applicantsCount || 2 }).map((_, idx) => ({
+        id: `app-gen-${job._id}-${idx}`,
+        name: `Candidate ${idx + 1}`,
+        email: `candidate${idx + 1}@university.edu`,
+        college: 'NMIT Bengaluru',
+        degree: 'B.Tech - Computer Science',
+        score: getRandomScore(),
+        skills: job.skills.slice(0, 3),
+      }))
+      const updatedJobs = jobs.map((j) => (j._id === job._id ? { ...j, applicants: generated } : j))
+      setJobs(updatedJobs)
+      setSelectedJobForApplicants({ ...job, applicants: generated })
+    } else {
+      setSelectedJobForApplicants(job)
+    }
+    setExpandedApplicantId(null)
+  }
+
+  const toggleExpandApplicant = (id) => {
+    setExpandedApplicantId((prev) => (prev === id ? null : id))
+  }
+
+  const totalApplicants = jobs.reduce((acc, job) => acc + (job.applicantsCount || 0), 0)
 
   return (
     <div className="page-frame dashboard-page">
@@ -173,9 +274,20 @@ export default function RecruiterDashboard() {
                 <p className="company-name">{job.company}</p>
 
                 <div className="job-meta">
-                  <span><MapPin size={14} />{job.location}</span>
-                  {job.duration && <span><Clock3 size={14} />{job.duration}</span>}
-                  <span><Users size={14} />{job.applicantsCount} applicants</span>
+                  <span>
+                    <MapPin size={14} />
+                    {job.location}
+                  </span>
+                  {job.duration && (
+                    <span>
+                      <Clock3 size={14} />
+                      {job.duration}
+                    </span>
+                  )}
+                  <span>
+                    <Users size={14} />
+                    {job.applicantsCount} applicants
+                  </span>
                 </div>
 
                 <div className="skill-list">
@@ -194,7 +306,11 @@ export default function RecruiterDashboard() {
                 >
                   <Trash2 size={16} />
                 </button>
-                <button type="button" className="secondary-button text-xs py-1.5 px-3">
+                <button
+                  type="button"
+                  className="secondary-button text-xs py-1.5 px-3"
+                  onClick={() => handleOpenApplicants(job)}
+                >
                   View Applicants ({job.applicantsCount})
                 </button>
               </div>
@@ -211,6 +327,132 @@ export default function RecruiterDashboard() {
         </div>
       )}
 
+      {/* View Applicants Modal */}
+      {/* View Applicants Modal */}
+{selectedJobForApplicants && (
+  <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6 md:p-10">
+    <div className="bg-white border border-[#e8e8e3] rounded-2xl max-w-5xl w-full p-8 shadow-2xl relative animate-in fade-in max-h-[90vh] flex flex-col">
+      {/* Close Button */}
+      <button
+        onClick={() => setSelectedJobForApplicants(null)}
+        className="absolute top-6 right-6 text-gray-400 hover:text-black transition"
+      >
+        <X size={20} />
+      </button>
+
+      {/* Header */}
+      <div className="mb-6 pb-4 border-b border-[#ecece8]">
+        <p className="kicker">List of Candidates</p>
+        <h2 className="text-2xl font-bold text-[#1c1d1f]">
+          Applicants for {selectedJobForApplicants.title}
+        </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Review candidate profiles, university credentials, and verified Skill Assessment scores.
+        </p>
+      </div>
+
+      {/* Applicant List Scrollable Container */}
+      <div className="overflow-y-auto space-y-4 pr-2">
+        {selectedJobForApplicants.applicants && selectedJobForApplicants.applicants.length > 0 ? (
+          selectedJobForApplicants.applicants.map((applicant) => {
+            const isExpanded = expandedApplicantId === applicant.id
+
+            return (
+              <div
+                key={applicant.id}
+                className="border border-[#e0e5e9] rounded-xl p-5 bg-[#fcfcfb] transition hover:border-[#ccd6df] hover:shadow-xs"
+              >
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <h4 className="text-base font-bold text-[#1c1d1f]">
+                        {applicant.name}
+                      </h4>
+                      <span className="text-xs font-medium text-gray-500 bg-[#f4f5f4] px-2 py-0.5 rounded border border-[#e8e8e3]">
+                        {applicant.degree}
+                      </span>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1 flex items-center gap-1.5">
+                      <GraduationCap size={14} className="text-gray-400" />
+                      {applicant.college}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-4 self-end sm:self-center">
+                    {/* Random Assessment Score Badge */}
+                    <div className="text-right">
+                      <span
+                        className={`text-xs font-bold px-2.5 py-1 rounded inline-block ${
+                          applicant.score >= 75
+                            ? 'bg-[#eef1ef] text-[#2b4c3f]'
+                            : applicant.score >= 55
+                            ? 'bg-[#fef9c3] text-[#854d0e]'
+                            : 'bg-[#fff7f5] text-[#a34e3f]'
+                        }`}
+                      >
+                        {applicant.score}% Score
+                      </span>
+                      <span className="block text-[10px] text-gray-400 font-medium mt-0.5">
+                        Technical & Aptitude
+                      </span>
+                    </div>
+
+                    {/* View Profile (down arrow) Button */}
+                    <button
+                      type="button"
+                      onClick={() => toggleExpandApplicant(applicant.id)}
+                      className="secondary-button text-xs py-1.5 px-3 flex items-center gap-1.5 text-[#566576] hover:text-black"
+                    >
+                      <span>View Profile</span>
+                      {isExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Expandable Applicant Details */}
+                {isExpanded && (
+                  <div className="mt-4 pt-4 border-t border-[#ede9e2] text-xs space-y-3 animate-in fade-in">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-gray-600">
+                      <div className="flex items-center gap-2">
+                        <Mail size={14} className="text-gray-400" />
+                        <span className="font-medium text-gray-800">{applicant.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <GraduationCap size={15} className="text-gray-400" />
+                        <span>{applicant.college} ({applicant.degree})</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="font-semibold text-gray-700 block mb-1.5">
+                        Verified Skills & Competencies:
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {applicant.skills.map((skill, idx) => (
+                          <span
+                            key={idx}
+                            className="bg-white border border-[#dbe4e9] text-[#476276] text-xs font-semibold px-2.5 py-0.5 rounded-md shadow-2xs"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )
+          })
+        ) : (
+          <p className="text-sm text-gray-400 text-center py-12">
+            No candidates have applied to this opportunity yet.
+          </p>
+        )}
+      </div>
+    </div>
+  </div>
+)}
+
       {/* New Opportunity Modal */}
       {showModal && (
         <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
@@ -223,7 +465,9 @@ export default function RecruiterDashboard() {
             </button>
 
             <h2 className="text-xl font-bold text-[#1c1d1f] mb-1">Post a New Opportunity</h2>
-            <p className="text-xs text-gray-500 mb-5">Create a job or internship listing to reach qualified candidates.</p>
+            <p className="text-xs text-gray-500 mb-5">
+              Create a job or internship listing to reach qualified candidates.
+            </p>
 
             <form onSubmit={handlePostJob} className="auth-form text-xs">
               <label>

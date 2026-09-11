@@ -1,6 +1,6 @@
 import { BookOpen, Save, SlidersHorizontal } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import FilterPanel from '../components/FilterPanel'
 import JobCard from '../components/JobCard'
 import SkillCard from '../components/SkillCard'
@@ -13,6 +13,7 @@ const emptySkills = []
 
 export default function StudentDashboard() {
   const { user, updateProfile } = useAuth()
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const activeTab = searchParams.get('tab') || 'opportunities'
 
@@ -188,6 +189,25 @@ export default function StudentDashboard() {
             )}
           </div>
         </form>
+      </section>
+
+      {/* Assessment Callout Banner */}
+      <section className="skills-profile" style={{ marginTop: '16px' }}>
+        <div>
+          <p className="kicker">Skill Assessment</p>
+          <h2>Assessment based on the technical and Soft Skills</h2>
+          <p>Benchmark your competencies to identify skill gaps and enhance role matches.</p>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <button
+            type="button"
+            className="primary-button"
+            onClick={() => navigate('/assessment')}
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            Attempt Assessment
+          </button>
+        </div>
       </section>
 
       {/* Filter Sidebar & Results Grid */}
