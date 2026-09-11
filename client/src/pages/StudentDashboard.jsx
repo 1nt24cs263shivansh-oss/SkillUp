@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext'
 import { MOCK_SKILL_PROGRAMS } from '../data/mockData'
 import api from '../services/api'
 
-const initialFilters = { search: '', type: '', location: '', skills: '' }
+const initialFilters = { search: '', type: '', location: '', skills: '', experienceLevel: '' }
 const emptySkills = []
 
 export default function StudentDashboard() {
@@ -27,6 +27,12 @@ export default function StudentDashboard() {
 
   const studentSkills = user?.skills ?? emptySkills
 
+  // Clear filters whenever switching between Opportunities and Skill Development
+  useEffect(() => {
+    setFilters(initialFilters)
+    setError('')
+  }, [activeTab])
+
   const query = useMemo(
     () => ({
       ...Object.fromEntries(Object.entries(filters).filter(([, value]) => value)),
@@ -35,7 +41,7 @@ export default function StudentDashboard() {
     [filters, studentSkills]
   )
 
-  // Fetch opportunities when on Opportunities tab
+  // Fetch opportunities from API when on Opportunities tab
   useEffect(() => {
     if (activeTab !== 'opportunities') return
     let active = true
@@ -56,25 +62,47 @@ export default function StudentDashboard() {
     }
   }, [query, activeTab])
 
-  // Filter skills catalog when on Skill Development tab
+  // Filter skills catalog locally based on search, type, skills, and level
   useEffect(() => {
     if (activeTab !== 'skills') return
     setLoading(true)
     setError('')
 
-    // Client-side filtering on mock data or API fallback
-    let filtered = MOCK_SKILL_PROGRAMS
+    let filtered = [...MOCK_SKILL_PROGRAMS]
+
+    // Event type filter
     if (filters.type) {
       filtered = filtered.filter(
-        (p) => p.type.toLowerCase() === filters.type.toLowerCase()
+        (program) => program.type?.toLowerCase() === filters.type.toLowerCase()
       )
     }
+
+    // Free text search (title, provider, description)
+    if (filters.search) {
+      const term = filters.search.toLowerCase()
+      filtered = filtered.filter(
+        (program) =>
+          program.title?.toLowerCase().includes(term) ||
+          program.provider?.toLowerCase().includes(term) ||
+          program.description?.toLowerCase().includes(term)
+      )
+    }
+
+    // Specific skills input filter
     if (filters.skills) {
-      const searchSkill = filters.skills.toLowerCase()
-      filtered = filtered.filter((p) =>
-        p.skills.some((s) => s.toLowerCase().includes(searchSkill))
+      const searchSkill = filters.skills.toLowerCase().trim()
+      filtered = filtered.filter((program) =>
+        program.skills?.some((s) => s.toLowerCase().includes(searchSkill))
       )
     }
+
+    // Experience / Difficulty level filter
+    if (filters.experienceLevel) {
+      filtered = filtered.filter(
+        (program) => program.level?.toLowerCase() === filters.experienceLevel.toLowerCase()
+      )
+    }
+
     setPrograms(filtered)
     setLoading(false)
   }, [filters, activeTab])
@@ -104,11 +132,11 @@ export default function StudentDashboard() {
 
   return (
     <div className="page-frame dashboard-page">
-      {/* Dynamic Intro */}
+      {/* Intro Header */}
       <section className="dashboard-intro">
         <div>
           <p className="kicker">
-            {activeTab === 'opportunities' ? 'Student workspace' : 'Skill Development & Training'}
+            {activeTab === 'opportunities' ? 'Student workspace' : 'Skill Development & Acceleration'}
           </p>
           <h1>
             {activeTab === 'opportunities'
@@ -118,7 +146,7 @@ export default function StudentDashboard() {
           <p>
             {activeTab === 'opportunities'
               ? 'Explore opportunities matched to the skills you are building now.'
-              : 'Workshops, certification tracks, and cohorts matched to industry demand.'}
+              : 'Workshops, certification tracks, and mentorship cohorts matched to industry demand.'}
           </p>
         </div>
       </section>
@@ -128,11 +156,11 @@ export default function StudentDashboard() {
         <span>
           {activeTab === 'opportunities'
             ? `${jobs.length} opportunities available`
-            : `${programs.length} programs available`}
+            : `${programs.length} learning programs available`}
         </span>
       </div>
 
-      {/* Shared Profile Skills Bar */}
+      {/* Skills Profile Strip */}
       <section className="skills-profile">
         <div>
           <p className="kicker">Your profile</p>
@@ -162,17 +190,18 @@ export default function StudentDashboard() {
         </form>
       </section>
 
-      {/* Main Grid: Filter Aside + Content Feed */}
+      {/* Filter Sidebar & Results Grid */}
       <div className="content-grid">
         <aside>
           <div className="filter-heading">
             <SlidersHorizontal size={17} />
-            <span>Refine results</span>
+            <span>{activeTab === 'skills' ? 'Filter events' : 'Refine results'}</span>
           </div>
           <FilterPanel
             filters={filters}
             onChange={change}
             onClear={() => setFilters(initialFilters)}
+            isSkillView={activeTab === 'skills'}
           />
         </aside>
 
@@ -180,10 +209,10 @@ export default function StudentDashboard() {
           <div className="results-header">
             <div>
               <p className="kicker">
-                {activeTab === 'opportunities' ? 'Opportunity board' : 'Learning catalog'}
+                {activeTab === 'opportunities' ? 'Opportunity board' : 'Event & Course Catalog'}
               </p>
               <h2>
-                {activeTab === 'opportunities' ? 'Roles to explore' : 'Training & Certifications'}
+                {activeTab === 'opportunities' ? 'Roles to explore' : 'Programs & Initiatives'}
               </h2>
             </div>
             <span className="results-count">
@@ -233,8 +262,8 @@ export default function StudentDashboard() {
             </div>
           ) : (
             <div className="empty-state">
-              <h3>No programs match those filters.</h3>
-              <p>Try resetting the filters to view all workshops and certifications.</p>
+              <h3>No learning events match those filters.</h3>
+              <p>Try selecting a different event type or clearing your search filters.</p>
               <button
                 type="button"
                 className="secondary-button"
