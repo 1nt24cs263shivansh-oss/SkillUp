@@ -1,0 +1,20 @@
+import { Save, SlidersHorizontal } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
+import FilterPanel from '../components/FilterPanel'
+import JobCard from '../components/JobCard'
+import { useAuth } from '../context/AuthContext'
+import api from '../services/api'
+
+const initialFilters = { search: '', type: '', location: '', skills: '' }
+const emptySkills = []
+
+export default function StudentDashboard() {
+  const { user, updateProfile } = useAuth(); const [filters, setFilters] = useState(initialFilters); const [jobs, setJobs] = useState([]); const [loading, setLoading] = useState(true); const [error, setError] = useState(''); const [skillInput, setSkillInput] = useState(user?.skills?.join(', ') || ''); const [savingSkills, setSavingSkills] = useState(false); const [profileMessage, setProfileMessage] = useState('')
+  const studentSkills = user?.skills ?? emptySkills
+  const query = useMemo(() => ({ ...Object.fromEntries(Object.entries(filters).filter(([, value]) => value)), ...(studentSkills.length ? { studentSkills: studentSkills.join(',') } : {}) }), [filters, studentSkills])
+  useEffect(() => { let active = true; setLoading(true); setError(''); api.get('/jobs', { params: query }).then(({ data }) => { if (active) setJobs(data.jobs) }).catch(() => { if (active) setError('We could not load opportunities. Check that the API and MongoDB are running.') }).finally(() => active && setLoading(false)); return () => { active = false } }, [query])
+  useEffect(() => setSkillInput(studentSkills.join(', ')), [studentSkills])
+  const change = (key, value) => setFilters((current) => ({ ...current, [key]: value }))
+  const saveSkills = async (event) => { event.preventDefault(); setSavingSkills(true); setProfileMessage(''); try { await updateProfile({ skills: skillInput.split(',').map((skill) => skill.trim()).filter(Boolean) }); setProfileMessage('Profile updated'); } catch (err) { setProfileMessage(err.response?.data?.message || 'Could not update your skills') } finally { setSavingSkills(false) } }
+  return <div className="page-frame dashboard-page"><section className="dashboard-intro"><div><p className="kicker">Student workspace</p><h1>Good morning. Find a role worth growing into.</h1><p>Explore opportunities matched to the skills you are building now.</p></div></section><div className="dashboard-rule"><span>{jobs.length} opportunities available</span></div><section className="skills-profile"><div><p className="kicker">Your profile</p><h2>Skills that shape your matches</h2><p>Companies are matched using their listed skills and role description.</p></div><form className="skills-editor" onSubmit={saveSkills}><label>Your skills<input value={skillInput} onChange={(event) => setSkillInput(event.target.value)} placeholder="React, SQL, Figma" /></label><div className="skills-editor-actions"><button className="primary-button" type="submit" disabled={savingSkills}><Save size={15} />{savingSkills ? 'Saving...' : 'Save skills'}</button>{profileMessage && <span className="profile-message" role="status">{profileMessage}</span>}</div></form></section><div className="content-grid"><aside><div className="filter-heading"><SlidersHorizontal size={17} /><span>Refine results</span></div><FilterPanel filters={filters} onChange={change} onClear={() => setFilters(initialFilters)} /></aside><section className="results-column"><div className="results-header"><div><p className="kicker">Opportunity board</p><h2>Roles to explore</h2></div><span className="results-count">{loading ? 'Loading...' : `${jobs.length} found`}</span></div>{error && <div className="inline-error" role="alert">{error}</div>}{loading ? <div className="loading-list"><div /><div /><div /></div> : jobs.length ? <div className="job-list">{jobs.map((job) => <JobCard key={job._id} job={job} />)}</div> : <div className="empty-state"><h3>No opportunities match those filters.</h3><p>Try a broader search or clear one of the filters.</p><button type="button" className="secondary-button" onClick={() => setFilters(initialFilters)}>Reset filters</button></div>}</section></div></div>
+}
