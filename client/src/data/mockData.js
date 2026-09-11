@@ -72,13 +72,14 @@ export const MOCK_JOBS = [
     ],
   },
 ]
+
 export const MOCK_SKILL_PROGRAMS = [
   {
     _id: 'prog-1',
     title: 'Full Stack MERN & System Design Certification',
     provider: 'SkillUp Academy & Meta Partner',
-    type: 'certification', // 'certification' | 'workshop' | 'training'
-    level: 'intermediate', // 'beginner' | 'intermediate' | 'advanced'
+    type: 'certification',
+    level: 'intermediate',
     format: 'Self-paced + Mentor evaluation',
     duration: '8 Weeks',
     cost: 'Free for verified students',
@@ -184,4 +185,27 @@ export const MOCK_SKILL_PROGRAMS = [
       { week: 'Week 5-6', title: 'Model Evaluation & Capstone Delivery', topics: ['ROC-AUC curves', 'SHAP values for interpretability', 'API serving'] },
     ],
   },
-];
+  {
+    _id: 'prog-4',
+    title: '1:1 Career Sprint & Mock Technical Interviews',
+    provider: 'SkillUp Mentor Circle',
+    type: 'mentorship',
+    level: 'intermediate',
+    format: 'Weekly 1:1 sessions + Portfolio review',
+    duration: '4 Weeks',
+    cost: 'Complimentary',
+    skills: ['System Design', 'Behavioral Rounds', 'LeetCode Strategy', 'Resume Review'],
+    description:
+      'Direct one-on-one mentorship sessions with industry professionals to conduct mock interviews, solve complex architecture problems, and get referred to recruiters.',
+    statusNote: 'Direct mentor assignment based on preferred company tracks.',
+    materials: [
+      { id: 'sm5', title: 'Senior Engineer Interview Rubric', type: 'PDF', duration: '15 mins' },
+    ],
+    assessment: [],
+    roadmap: [
+      { week: 'Week 1', title: 'Profile & Resume Deep Dive', topics: ['Resume impact metrics', 'ATS optimization', 'GitHub profile audit'] },
+      { week: 'Week 2-3', title: 'Technical Problem Solving & System Design', topics: ['Data structures live coding', 'Scaling web architectures'] },
+      { week: 'Week 4', title: 'Recruiter Handover & Behavioral Alignment', topics: ['STAR method answers', 'Direct candidate endorsement'] },
+    ],
+  },
+]
