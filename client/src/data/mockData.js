@@ -78,134 +78,56 @@ export const MOCK_SKILL_PROGRAMS = [
     _id: 'prog-1',
     title: 'Full Stack MERN & System Design Certification',
     provider: 'SkillUp Academy & Meta Partner',
-    type: 'certification',
+    type: 'Certification',
     level: 'intermediate',
     format: 'Self-paced + Mentor evaluation',
     duration: '8 Weeks',
-    cost: 'Free for verified students',
+    pricing: 'Free for verified students',
+    description: 'Industry-recognized certificate badge awarded upon passing milestone tests.',
     skills: ['React', 'Node.js', 'MongoDB', 'System Architecture', 'REST APIs'],
-    description:
-      'Comprehensive hands-on training path covering client-side performance, scalable Express APIs, indexing in MongoDB, and core architectural patterns.',
-    statusNote: 'Industry-recognized certificate badge awarded upon passing milestone tests.',
-    materials: [
-      { id: 'sm1', title: 'High-Level Architecture & Caching Strategies', type: 'PDF', duration: '35 mins' },
-      { id: 'sm2', title: 'MongoDB Indexing & Aggregation Deep Dive', type: 'Video', duration: '45 mins' },
-    ],
-    assessment: [
-      {
-        id: 1,
-        question: 'What is the advantage of using a compound index in MongoDB?',
-        options: [
-          'It encrypts sensitive fields by default',
-          'It supports queries matching multiple fields in a specified sort order',
-          'It replaces the primary _id key',
-          'It prevents database replication delay',
-        ],
-        answer: 1,
-      },
-      {
-        id: 2,
-        question: 'Which HTTP method is idempotent by definition in RESTful API design?',
-        options: ['POST', 'PUT', 'PATCH (non-idempotent implementations)', 'CONNECT'],
-        answer: 1,
-      },
-    ],
-    roadmap: [
-      { week: 'Week 1-2', title: 'Advanced Frontend State & Clean Architecture', topics: ['Context boundaries', 'Custom hooks', 'Tailwind modularity'] },
-      { week: 'Week 3-5', title: 'Scalable Express.js & MongoDB Schemas', topics: ['Mongoose aggregate pipelines', 'JWT authentication', 'Role-based access'] },
-      { week: 'Week 6-8', title: 'System Design & End-to-End Deployment', topics: ['Dockerization', 'Load balancing basics', 'CI/CD pipeline rollout'] },
-    ],
+    // Clean Web Development / Code screen image
+    image: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?auto=format&fit=crop&w=900&q=80',
   },
   {
     _id: 'prog-2',
     title: 'Live Lab: Microservices & Cloud-Native Deployment',
     provider: 'Cloud Native Guild',
-    type: 'workshop',
+    type: 'Workshop',
     level: 'intermediate',
     format: 'Live interactive weekend intensive',
     duration: '2 Days (Sat - Sun)',
-    cost: 'Limited Seats (Free)',
+    pricing: 'Limited Seats (Free)',
+    description: 'Includes live code review with senior mentors.',
     skills: ['Docker', 'Kubernetes', 'Express', 'Cloud Deployment'],
-    description:
-      'Break a monolithic web app into loosely coupled microservices, containerize each service, and orchestrate local deployments with Kubernetes.',
-    statusNote: 'Includes live code review with senior mentors.',
-    materials: [
-      { id: 'sm3', title: 'Dockerfile Optimization & Multi-Stage Builds', type: 'Documentation', duration: '20 mins' },
-    ],
-    assessment: [
-      {
-        id: 1,
-        question: 'In Docker, why are multi-stage builds recommended for production images?',
-        options: [
-          'They bypass network security groups',
-          'They significantly reduce final image size by discarding build-time dependencies',
-          'They make Dockerfiles run in parallel automatically',
-          'They allow containers to run without a host kernel',
-        ],
-        answer: 1,
-      },
-    ],
-    roadmap: [
-      { week: 'Day 1', title: 'Service Decomposition & Containerization', topics: ['API Gateway patterns', 'Multi-stage Docker builds', 'Service networking'] },
-      { week: 'Day 2', title: 'Kubernetes Orchestration & Service Discovery', topics: ['Pods & Deployments', 'ConfigMaps & Secrets', 'Ingress controllers'] },
-    ],
+    // Cloud Infrastructure / Server racks / DevOps architecture
+    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=900&q=80',
   },
   {
     _id: 'prog-3',
     title: 'Applied Machine Learning & Predictive Analytics Cohort',
     provider: 'NeuralCraft Labs',
-    type: 'training',
+    type: 'Training',
     level: 'beginner',
     format: 'Guided cohort with weekly mentor reviews',
     duration: '6 Weeks',
-    cost: 'Recruiter-sponsored',
+    pricing: 'Recruiter-sponsored',
+    description: 'Top 10% referred directly to partner recruiters.',
     skills: ['Python', 'EDA', 'Scikit-learn', 'PyTorch', 'Data Visualization'],
-    description:
-      'Structured training designed to get students from data preprocessing to production-grade supervised learning models ready for intern roles.',
-    statusNote: 'Top 10% referred directly to partner recruiters.',
-    materials: [
-      { id: 'sm4', title: 'End-to-End Scikit-Learn Pipeline Templates', type: 'Notebook', duration: '40 mins' },
-    ],
-    assessment: [
-      {
-        id: 1,
-        question: 'Why should feature scaling be fitted only on the training set and not the entire dataset?',
-        options: [
-          'To prevent data leakage from the test set',
-          'Because the test set does not support matrix operations',
-          'To reduce RAM usage by 50%',
-          'Scaling only applies to classification labels',
-        ],
-        answer: 0,
-      },
-    ],
-    roadmap: [
-      { week: 'Week 1-2', title: 'Exploratory Data Analysis & Preprocessing', topics: ['Missing data imputations', 'IQR detection', 'Categorical encoding'] },
-      { week: 'Week 3-4', title: 'Supervised Models & Hyperparameter Tuning', topics: ['Ensemble methods', 'GridSearchCV', 'Cross-validation'] },
-      { week: 'Week 5-6', title: 'Model Evaluation & Capstone Delivery', topics: ['ROC-AUC curves', 'SHAP values for interpretability', 'API serving'] },
-    ],
+    // Neural Networks / AI / Data Analytics
+    image: 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=900&q=80',
   },
   {
     _id: 'prog-4',
     title: '1:1 Career Sprint & Mock Technical Interviews',
     provider: 'SkillUp Mentor Circle',
-    type: 'mentorship',
+    type: 'Mentorship',
     level: 'intermediate',
     format: 'Weekly 1:1 sessions + Portfolio review',
     duration: '4 Weeks',
-    cost: 'Complimentary',
+    pricing: 'Complimentary',
+    description: 'Direct mentor assignment based on preferred company tracks.',
     skills: ['System Design', 'Behavioral Rounds', 'LeetCode Strategy', 'Resume Review'],
-    description:
-      'Direct one-on-one mentorship sessions with industry professionals to conduct mock interviews, solve complex architecture problems, and get referred to recruiters.',
-    statusNote: 'Direct mentor assignment based on preferred company tracks.',
-    materials: [
-      { id: 'sm5', title: 'Senior Engineer Interview Rubric', type: 'PDF', duration: '15 mins' },
-    ],
-    assessment: [],
-    roadmap: [
-      { week: 'Week 1', title: 'Profile & Resume Deep Dive', topics: ['Resume impact metrics', 'ATS optimization', 'GitHub profile audit'] },
-      { week: 'Week 2-3', title: 'Technical Problem Solving & System Design', topics: ['Data structures live coding', 'Scaling web architectures'] },
-      { week: 'Week 4', title: 'Recruiter Handover & Behavioral Alignment', topics: ['STAR method answers', 'Direct candidate endorsement'] },
-    ],
+    // Professional 1:1 Discussion / Mentoring session
+    image: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=900&q=80',
   },
 ]
