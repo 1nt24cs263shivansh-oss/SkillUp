@@ -1,75 +1,72 @@
-import { RotateCcw, Search } from 'lucide-react'
+import { useSearchParams } from 'react-router-dom'
 
-export default function FilterPanel({ filters, onChange, onClear, isSkillView = false }) {
+export default function FilterPanel({ filters, onChange, onClear }) {
+  const [searchParams] = useSearchParams()
+  const activeTab = searchParams.get('tab') || 'opportunities'
+
   return (
-    <section className="filter-panel" aria-label={isSkillView ? 'Skill development filters' : 'Opportunity filters'}>
-      <div className="search-wrap">
-        <Search size={18} />
-        <input
-          value={filters.search}
-          onChange={(event) => onChange('search', event.target.value)}
-          placeholder={isSkillView ? 'Search programs, tracks or mentors' : 'Search roles, skills or companies'}
-          aria-label={isSkillView ? 'Search programs, tracks or mentors' : 'Search roles, skills or companies'}
-        />
-      </div>
-
+    <div className="filter-panel">
       <div className="filter-grid">
-        {isSkillView ? (
-          <label>
-            Event type
-            <select value={filters.type} onChange={(event) => onChange('type', event.target.value)}>
-              <option value="">All event types</option>
-              <option value="training">Training programs</option>
-              <option value="certification">Certification courses</option>
-              <option value="workshop">Workshops</option>
-              <option value="mentorship">Mentorship initiatives</option>
-            </select>
-          </label>
-        ) : (
-          <label>
-            Job type
-            <select value={filters.type} onChange={(event) => onChange('type', event.target.value)}>
-              <option value="">All types</option>
-              <option value="internship">Internship</option>
-              <option value="full-time">Full-time</option>
-            </select>
-          </label>
-        )}
-
-        {!isSkillView && (
-          <label>
-            Location
-            <input
-              value={filters.location}
-              onChange={(event) => onChange('location', event.target.value)}
-              placeholder="e.g. Bangalore"
-            />
-          </label>
-        )}
-
         <label>
-          Skills
+          Search
           <input
-            value={filters.skills}
-            onChange={(event) => onChange('skills', event.target.value)}
-            placeholder={isSkillView ? 'e.g. Docker, Python' : 'e.g. React'}
+            type="text"
+            placeholder="Keywords..."
+            value={filters.search}
+            onChange={(e) => onChange('search', e.target.value)}
           />
         </label>
 
+        {activeTab === 'opportunities' ? (
+          <>
+            <label>
+              Type
+              <select value={filters.type} onChange={(e) => onChange('type', e.target.value)}>
+                <option value="">All types</option>
+                <option value="internship">Internship</option>
+                <option value="full-time">Full-time</option>
+              </select>
+            </label>
+            <label>
+              Location
+              <input
+                type="text"
+                placeholder="City or Remote"
+                value={filters.location}
+                onChange={(e) => onChange('location', e.target.value)}
+              />
+            </label>
+          </>
+        ) : (
+          <label>
+            Program Type
+            <select value={filters.type} onChange={(e) => onChange('type', e.target.value)}>
+              <option value="">All programs</option>
+              <option value="Live lectures">Live lectures</option>
+              <option value="Courses">Courses</option>
+              <option value="Mentorship">Mentorship</option>
+              <option value="Challenges">Challenges</option>
+              <option value="Workshops">Workshops</option>
+            </select>
+          </label>
+        )}
+
         <label>
-          Level
-          <select value={filters.experienceLevel} onChange={(event) => onChange('experienceLevel', event.target.value)}>
-            <option value="">Any level</option>
-            <option value="beginner">Beginner</option>
-            <option value="intermediate">Intermediate</option>
-            <option value="advanced">Advanced</option>
-          </select>
+          {activeTab === 'opportunities' ? 'Required Skills' : 'Target Skills'}
+          <input
+            type="text"
+            placeholder="React, Python..."
+            value={filters.skills}
+            onChange={(e) => onChange('skills', e.target.value)}
+          />
         </label>
       </div>
 
-      <button className="clear-button" type="button" onClick={onClear}>
-        <RotateCcw size={14} /> Clear filters
-      </button>
-    </section>
+      {(filters.search || filters.type || filters.location || filters.skills) && (
+        <button className="clear-button" type="button" onClick={onClear}>
+          Clear all filters
+        </button>
+      )}
+    </div>
   )
 }
